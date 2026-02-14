@@ -1,0 +1,7 @@
+# No external dependencies required
+fastapi
+uvicorn
+jinja2
+python-multipart
+scikit-learn
+joblib

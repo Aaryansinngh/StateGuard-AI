@@ -1,26 +1,46 @@
 # main.py
 
+from verifier.state_space import generate_states
+from verifier.property_checker import check_property
+from model.ai_model import LoanModel
 import json
-from verifier.explorer import explore
+import os
 
-def main():
 
-    print("Starting AI Model Verification...")
-    print("-----------------------------------")
+def run_verification():
 
-    violations = explore()
+    model = LoanModel()
+    states = list(generate_states())
+    violations = []
 
-    if violations:
-        print("Property Violations Found!")
-        print(f"Total Violations: {len(violations)}")
+    for state in states:
 
-        with open("results/counterexamples.json", "w") as f:
-            json.dump(violations, f, indent=4)
+        output = model.predict(
+            state["income"],
+            state["credit_score"],
+            state["age"]
+        )
 
-        print("Counterexamples saved to results/counterexamples.json")
+        if not check_property(state, output):
+            violations.append({
+                "state": state,
+                "output": output
+            })
 
-    else:
-        print("Model Verified Successfully. No Violations Found.")
+    result = {
+        "status": "completed",
+        "total_states_checked": len(states),
+        "violations": len(violations),
+        "counterexamples": violations
+    }
+
+    os.makedirs("results", exist_ok=True)
+    with open("results/counterexamples.json", "w") as f:
+        json.dump(result, f, indent=4)
+
+    return result
+
 
 if __name__ == "__main__":
-    main()
+    output = run_verification()
+    print(json.dumps(output, indent=4))

@@ -1,162 +1,166 @@
-[
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 800,
-            "age": 18
+{
+    "status": "completed",
+    "violations": 20,
+    "counterexamples": [
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 800,
+                "age": 18
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 800,
-            "age": 28
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 800,
+                "age": 28
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 800,
-            "age": 38
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 800,
+                "age": 38
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 800,
-            "age": 48
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 800,
+                "age": 48
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 800,
-            "age": 58
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 800,
+                "age": 58
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 850,
-            "age": 18
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 850,
+                "age": 18
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 850,
-            "age": 28
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 850,
+                "age": 28
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 850,
-            "age": 38
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 850,
+                "age": 38
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 850,
-            "age": 48
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 850,
+                "age": 48
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 20000,
-            "credit_score": 850,
-            "age": 58
+        {
+            "state": {
+                "income": 20000,
+                "credit_score": 850,
+                "age": 58
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 800,
-            "age": 18
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 800,
+                "age": 18
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 800,
-            "age": 28
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 800,
+                "age": 28
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 800,
-            "age": 38
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 800,
+                "age": 38
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 800,
-            "age": 48
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 800,
+                "age": 48
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 800,
-            "age": 58
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 800,
+                "age": 58
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 850,
-            "age": 18
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 850,
+                "age": 18
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 850,
-            "age": 28
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 850,
+                "age": 28
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 850,
-            "age": 38
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 850,
+                "age": 38
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 850,
-            "age": 48
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 850,
+                "age": 48
+            },
+            "output": "rejected"
         },
-        "output": "rejected"
-    },
-    {
-        "state": {
-            "income": 30000,
-            "credit_score": 850,
-            "age": 58
-        },
-        "output": "rejected"
-    }
-]
+        {
+            "state": {
+                "income": 30000,
+                "credit_score": 850,
+                "age": 58
+            },
+            "output": "rejected"
+        }
+    ]
+}

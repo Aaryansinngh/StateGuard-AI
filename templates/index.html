@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StateGuard AI</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .github-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .github-link a {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #111827;
+            border: 1px solid #334155;
+            color: #22c55e;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .github-link a:hover {
+            background: #1f2937;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .metric-box {
+            flex: 1;
+            background: #334155;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        select, textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #22c55e;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        .success { color: #22c55e; }
+        .danger { color: #ef4444; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #334155;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #334155;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .low-risk { background: #22c55e; }
+        .moderate-risk { background: #facc15; color:black; }
+        .high-risk { background: #ef4444; }
+    </style>
+</head>
+<body>
+
+<h1>StateGuard AI — Model Verification & Fairness Analysis</h1>
+
+<div class="github-link">
+    <a href="https://github.com/Aaryansinngh" target="_blank">
+        View My GitHub →
+    </a>
+</div>
+
+<p class="subtitle">
+    A modular AI verification framework supporting rule-based, Python, and ML models with fairness analysis.
+</p>
+
+<div class="container">
+
+    <!-- MODEL CONFIGURATION -->
+    <div class="card">
+        <h3>Model Configuration</h3>
+
+        <select id="model_type" onchange="updateUI()">
+            <option value="loan">LoanModel (Built-in)</option>
+            <option value="rule">Custom Rule</option>
+            <option value="python">Upload Python Model (.py)</option>
+            <option value="sklearn">Upload Sklearn Model (.pkl)</option>
+        </select>
+
+        <textarea id="rule"
+                  placeholder="Custom Rule Example:
+income > 50000 and credit_score > 650"
+                  style="display:none;"></textarea>
+
+        <input type="file" id="file" style="display:none;">
+
+        <button onclick="verifyModel()">Run Verification</button>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div id="analysisSection" style="display:none;">
+
+        <div class="card">
+            <h3>Verification Summary</h3>
+
+            <div class="row">
+                <div class="metric-box">
+                    <h4>Total States</h4>
+                    <div id="totalStates"></div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Violations</h4>
+                    <div id="violations"></div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Bias Score</h4>
+                    <div id="biasScore"></div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Risk Level</h4>
+                    <div id="riskLevel"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Approval Rate by Age</h3>
+            <canvas id="ageChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h3>Counterexamples</h3>
+            <div class="table-container" id="counterTable"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let ageChart;
+
+function updateUI() {
+    const type = document.getElementById("model_type").value;
+    document.getElementById("rule").style.display = type === "rule" ? "block" : "none";
+    document.getElementById("file").style.display =
+        (type === "python" || type === "sklearn") ? "block" : "none";
+}
+
+async function verifyModel() {
+
+    const type = document.getElementById("model_type").value;
+    const rule = document.getElementById("rule").value;
+    const fileInput = document.getElementById("file");
+
+    const formData = new FormData();
+    formData.append("model_type", type);
+    formData.append("rule", rule);
+
+    if (fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+    }
+
+    const response = await fetch("/verify_model", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    document.getElementById("analysisSection").style.display = "block";
+
+    renderMetrics(data);
+    renderChart(data);
+    renderTable(data);
+}
+
+function renderMetrics(data) {
+
+    document.getElementById("totalStates").innerHTML =
+        `<strong>${data.total_states_checked}</strong>`;
+
+    document.getElementById("violations").innerHTML =
+        `<strong class="${data.violations > 0 ? 'danger' : 'success'}">
+            ${data.violations}
+        </strong>`;
+
+    document.getElementById("biasScore").innerHTML =
+        `<strong>${data.bias_score}</strong>`;
+
+    let riskClass = "low-risk";
+    let riskLabel = "Low";
+
+    if (data.bias_score > 0.3) {
+        riskClass = "high-risk";
+        riskLabel = "High";
+    } else if (data.bias_score > 0.15) {
+        riskClass = "moderate-risk";
+        riskLabel = "Moderate";
+    }
+
+    document.getElementById("riskLevel").innerHTML =
+        `<span class="badge ${riskClass}">${riskLabel}</span>`;
+}
+
+function renderChart(data) {
+
+    const ages = Object.keys(data.approval_rates_by_age);
+    const rates = Object.values(data.approval_rates_by_age);
+
+    if (ageChart) ageChart.destroy();
+
+    ageChart = new Chart(document.getElementById("ageChart"), {
+        type: "line",
+        data: {
+            labels: ages,
+            datasets: [{
+                label: "Approval Rate",
+                data: rates,
+                borderColor: "#22c55e",
+                tension: 0.3
+            }]
+        }
+    });
+}
+
+function renderTable(data) {
+
+    let html = `
+        <table>
+            <tr>
+                <th>Income</th>
+                <th>Credit Score</th>
+                <th>Age</th>
+                <th>Output</th>
+            </tr>
+    `;
+
+    data.counterexamples.forEach(v => {
+        html += `
+            <tr>
+                <td>${v.state.income}</td>
+                <td>${v.state.credit_score}</td>
+                <td>${v.state.age}</td>
+                <td>${v.output}</td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+
+    document.getElementById("counterTable").innerHTML = html;
+}
+
+updateUI();
+
+</script>
+
+</body>
+</html>

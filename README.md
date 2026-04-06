@@ -1,33 +1,181 @@
-<<<<<<< HEAD
-# StateGuard-AI
+# StateGuard-AI 🚀
 
-StateGuard-AI is a simple AI model verification framework that uses
-state space exploration to verify safety properties of AI models.
+**Formal Verification Framework for AI Models using State-Space Exploration**
 
-## Features
+---
 
-- Exhaustive state space exploration
-- Safety property checking
-- Counterexample generation
-- JSON violation reporting
+## 🔍 Overview
 
-## How It Works
+StateGuard-AI is a modular AI verification framework designed to validate decision-making systems using **formal verification techniques**.
 
-1. Generate all possible input states
-2. Run AI model on each state
-3. Check safety property
-4. Store violations
+Unlike traditional evaluation methods that rely only on accuracy metrics, this system models AI behavior as a **deterministic function over a bounded input domain** and performs **exhaustive state-space exploration** to verify correctness, safety, and fairness properties.
 
-## Run
+---
 
+## 🎯 Key Objectives
+
+* Verify **logical correctness** of AI models
+* Detect **unsafe or inconsistent behavior**
+* Generate **counterexamples for debugging**
+* Evaluate **fairness and bias across inputs**
+
+---
+
+## ⚙️ Core Features
+
+* ✅ Exhaustive state-space exploration
+* ✅ Formal safety property verification
+* ✅ Multi-property validation framework
+* ✅ Counterexample generation
+* ✅ Fairness & bias analysis (age-based)
+* ✅ Support for:
+
+  * Rule-based models
+  * Python models (`predict()` function)
+  * Scikit-learn models (`.pkl`)
+
+---
+
+## 🧠 System Architecture
+
+```
+Input Model
+     ↓
+State Space Generator
+     ↓
+Model Execution Engine
+     ↓
+Property Checker
+     ↓
+Violation Detector
+     ↓
+Counterexample Generator
+     ↓
+Results & Fairness Analysis
+```
+
+---
+
+## 🔬 Methodology
+
+1. Define AI model as a function:
+   → `f(income, credit_score, age) → decision`
+
+2. Generate all possible states within a bounded domain
+
+3. Execute model on each state
+
+4. Verify predefined **formal properties**, such as:
+
+   * High income applicants should not be rejected
+   * Minimum age constraints
+   * Credit-score consistency
+
+5. Store violations as **counterexamples**
+
+6. Compute fairness metrics (e.g., **bias score**)
+
+---
+
+## 📊 Example Output
+
+```json
+{
+  "total_states_checked": 1000,
+  "violations": 42,
+  "bias_score": 0.23,
+  "counterexamples": [
+    {
+      "state": {"income": 80000, "credit_score": 760, "age": 25},
+      "output": "rejected",
+      "violated_properties": ["property_high_income_should_not_be_rejected"]
+    }
+  ]
+}
+```
+
+---
+
+## 📈 Why This Matters
+
+Traditional ML testing checks performance on datasets.
+StateGuard-AI goes further by providing:
+
+* 🔒 **Formal guarantees within bounded domains**
+* ⚠️ **Detection of hidden unsafe behaviors**
+* 🧾 **Explainable counterexamples**
+* ⚖️ **Fairness verification**
+
+---
+
+## 🛠️ Tech Stack
+
+* Python
+* FastAPI
+* Scikit-learn
+* Joblib
+* Jinja2
+* State-space exploration techniques
+
+---
+
+## ▶️ How to Run
+
+### 1. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Run verification
+
+```bash
 python main.py
-=======
+```
 
+### 3. Run web interface
 
-StateGuard-AI is a modular verification framework designed to validate AI decision systems using explicit state space exploration. 
+```bash
+uvicorn app:app --reload
+```
 
-The system models AI behavior as a deterministic function over a bounded input domain and systematically checks predefined safety properties. If violations are detected, counterexamples are automatically generated and stored for analysis.
+---
 
-This project demonstrates how formal verification concepts can be applied to AI systems to improve reliability and safety.
-# StateGuard-AIA lightweight AI verification framework using bounded state space exploration to detect safety property violations and generate counterexamples.
->>>>>>> 87bed4e350a74c789d301ce81de48709a6777cdd
+## 📁 Project Structure
+
+```
+StateGuard-AI/
+│── model/                # AI models
+│── verifier/             # State generation & property checking
+│── templates/            # Frontend UI
+│── uploaded_models/      # User-uploaded models
+│── results/              # Counterexamples output
+│── main.py               # CLI verification
+│── app.py                # Web interface
+```
+
+---
+
+## 🚀 Future Work
+
+* Integration with **SMT solvers (Z3)** for symbolic verification
+* Support for **deep neural networks**
+* Real-time verification pipelines
+* Advanced fairness metrics
+
+---
+
+## 👨‍💻 Author
+
+Aryan Singh
+Manipal University Jaipur
+Department of Computer Science & Engineering
+
+---
+
+## 📌 Conclusion
+
+StateGuard-AI demonstrates how **formal verification principles** can be applied to AI systems to improve **reliability, safety, and trustworthiness**, making it suitable for **high-stakes applications** such as finance, healthcare, and autonomous systems.
+
+---
+Enter file contents here

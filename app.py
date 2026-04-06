@@ -7,8 +7,7 @@ import joblib
 import os
 
 from verifier.state_space import generate_states
-from verifier.property_checker import check_property
-from model.ai_model import LoanModel
+from verifier.property_checker import check_all_properties
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -35,12 +34,8 @@ async def verify_model(
 
     model = None
 
-    # ================= BUILT-IN MODEL =================
-    if model_type == "loan":
-        model = LoanModel()
-
     # ================= PYTHON MODEL =================
-    elif model_type == "python":
+    if model_type == "python":
 
         file_path = os.path.join(UPLOAD_DIR, file.filename)
 
@@ -83,11 +78,8 @@ async def verify_model(
         credit_score = state["credit_score"]
         age = state["age"]
 
-        # Get output
-        if model_type == "loan":
-            output = model.predict(income, credit_score, age)
-
-        elif model_type == "rule":
+        # ===== MODEL EXECUTION =====
+        if model_type == "rule":
             try:
                 output = "approved" if eval(rule) else "rejected"
             except:
@@ -100,11 +92,17 @@ async def verify_model(
             prediction = model.predict([[income, credit_score, age]])[0]
             output = "approved" if prediction == 1 else "rejected"
 
-        # Property check
-        if not check_property(state, output):
-            violations.append({"state": state, "output": output})
+        # ===== PROPERTY VERIFICATION =====
+        violated_props = check_all_properties(state, output)
 
-        # Fairness tracking
+        if violated_props:
+            violations.append({
+                "state": state,
+                "output": output,
+                "violated_properties": violated_props
+            })
+
+        # ===== FAIRNESS TRACKING =====
         if age not in age_stats:
             age_stats[age] = {"approved": 0, "rejected": 0}
 
@@ -124,6 +122,8 @@ async def verify_model(
     max_rate = max(approval_rates.values())
     min_rate = min(approval_rates.values())
     bias_score = round(max_rate - min_rate, 3)
+
+    # ================= FINAL RESPONSE =================
 
     return {
         "model_type": model_type,

@@ -101,6 +101,7 @@ async def verify_model(
         # ===== PROPERTY CHECK =====
         violated_props = check_all_properties(state, output)
 
+        # 🔥 Ensure violations always have properties
         if violated_props:
             violations.append({
                 "state": state,
@@ -123,8 +124,6 @@ async def verify_model(
 
     for age, stats in age_stats.items():
         total = stats["approved"] + stats["rejected"]
-
-        # 🔥 IMPORTANT: string key (fixes JSON error on Render)
         approval_rates[str(age)] = stats["approved"] / total if total > 0 else 0
 
     if approval_rates:
@@ -134,13 +133,42 @@ async def verify_model(
     else:
         bias_score = 0
 
-    # ================= FINAL RESPONSE =================
+    # ================= RISK SCORE =================
+    risk_score = round(len(violations) / len(states), 3) if len(states) > 0 else 0
 
+    # ================= SEVERITY ANALYSIS =================
+    severity_count = {
+        "CRITICAL": 0,
+        "HIGH": 0,
+        "MEDIUM": 0
+    }
+
+    for v in violations:
+        if "violated_properties" in v:
+            for prop in v["violated_properties"]:
+                if "age" in prop:
+                    severity_count["CRITICAL"] += 1
+                elif "income" in prop:
+                    severity_count["HIGH"] += 1
+                else:
+                    severity_count["MEDIUM"] += 1
+
+    # ================= FINAL RESPONSE =================
     return {
         "model_type": model_type,
         "total_states_checked": len(states),
+
+        # Core metrics
         "violations": len(violations),
-        "counterexamples": violations,
+        "risk_score": risk_score,
+        "bias_score": bias_score,
+
+        # Fairness
         "approval_rates_by_age": approval_rates,
-        "bias_score": bias_score
+
+        # Advanced analysis
+        "severity_breakdown": severity_count,
+
+        # Debugging
+        "counterexamples": violations[:20]
     }

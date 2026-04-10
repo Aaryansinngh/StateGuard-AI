@@ -1,92 +1,84 @@
 <!DOCTYPE html>
-
 <html>
 <head>
     <title>StateGuard AI</title>
 
-```
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: white;
-        margin: 0;
-        padding: 30px;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 30px;
+        }
 
-    h1 {
-        text-align: center;
-    }
+        h1 { text-align: center; }
 
-    .container {
-        max-width: 1200px;
-        margin: auto;
-    }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
 
-    .card {
-        background: linear-gradient(145deg, #1e293b, #0f172a);
-        padding: 20px;
-        border-radius: 14px;
-        margin-bottom: 25px;
-        border: 1px solid rgba(255,255,255,0.05);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    }
+        .card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
 
-    .row {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
+        .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
-    .metric-box {
-        flex: 1;
-        background: #334155;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-    }
+        .metric-box {
+            flex: 1;
+            background: #334155;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
 
-    button {
-        padding: 12px 20px;
-        background: #22c55e;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-top: 10px;
-    }
+        button {
+            padding: 12px 20px;
+            background: #22c55e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
 
-    select, textarea, input {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 6px;
-        border: none;
-    }
+        select, textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: none;
+        }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    th, td {
-        border: 1px solid #334155;
-        padding: 8px;
-        text-align: center;
-    }
+        th, td {
+            border: 1px solid #334155;
+            padding: 8px;
+            text-align: center;
+        }
 
-    th {
-        background: #334155;
-    }
+        th { background: #334155; }
 
-    .danger { color: #ef4444; }
-    .success { color: #22c55e; }
-
-</style>
-```
-
+        .danger { color: #ef4444; }
+        .success { color: #22c55e; }
+        .medium { color: #f59e0b; }
+    </style>
 </head>
 
 <body>
@@ -95,114 +87,79 @@
 
 <div class="container">
 
-```
-<!-- MODEL -->
-<div class="card">
-    <h3>Model Configuration</h3>
-
-    <select id="model_type" onchange="updateUI()">
-        <option value="sklearn">Sklearn Model (.pkl)</option>
-        <option value="python">Python Model</option>
-        <option value="rule">Custom Rule</option>
-    </select>
-
-    <textarea id="rule" placeholder="income > 50000 and credit_score > 650" style="display:none;"></textarea>
-    <input type="file" id="file">
-
-    <button onclick="verifyModel()">Run Verification</button>
-</div>
-
-<div id="analysisSection">
-
+    <!-- MODEL -->
     <div class="card">
-        <h3>Verification Summary</h3>
-        <div class="row">
+        <h3>Model Configuration</h3>
 
-            <div class="metric-box">
-                <h4>Total States</h4>
-                <div id="totalStates">--</div>
+        <select id="model_type" onchange="updateUI()">
+            <option value="sklearn">Sklearn Model (.pkl)</option>
+            <option value="python">Python Model</option>
+            <option value="rule">Custom Rule</option>
+        </select>
+
+        <textarea id="rule" placeholder="income > 50000 and credit_score > 650" style="display:none;"></textarea>
+        <input type="file" id="file">
+
+        <button onclick="verifyModel()">Run Verification</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="analysisSection" style="display:none;">
+
+        <!-- METRICS -->
+        <div class="card">
+            <div class="row">
+
+                <div class="metric-box">
+                    <h4>Total States</h4>
+                    <div id="totalStates">0</div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Violations</h4>
+                    <div id="violations">0</div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Bias Score</h4>
+                    <div id="biasScore">0</div>
+                </div>
+
+                <div class="metric-box">
+                    <h4>Risk Score</h4>
+                    <div id="riskScore">0</div>
+                </div>
+
             </div>
-
-            <div class="metric-box">
-                <h4>Violations</h4>
-                <div id="violations">--</div>
-            </div>
-
-            <div class="metric-box">
-                <h4>Bias Score</h4>
-                <div id="biasScore">--</div>
-            </div>
-
         </div>
-    </div>
 
-    <div class="card">
-        <h3>System Insight</h3>
-        <p id="insightText">Run verification to analyze model behavior.</p>
-    </div>
-
-    <div class="card">
-        <h3>Approval Rate by Age</h3>
-        <canvas id="ageChart"></canvas>
-    </div>
-
-    <div class="card">
-        <h3>Counterexamples</h3>
-        <div id="counterTable">No violations yet.</div>
-    </div>
-
-</div>
-
-
-
-
-
-
-<!-- RESULTS -->
-<div id="analysisSection" style="display:none;">
-
-    <!-- METRICS -->
-    <div class="card">
-        <div class="row">
-
-            <div class="metric-box">
-                <h4>Total States</h4>
-                <div id="totalStates">0</div>
-            </div>
-
-            <div class="metric-box">
-                <h4>Violations</h4>
-                <div id="violations">0</div>
-            </div>
-
-            <div class="metric-box">
-                <h4>Bias Score</h4>
-                <div id="biasScore">0</div>
-            </div>
-
+        <!-- SEVERITY -->
+        <div class="card">
+            <h3>Severity Breakdown</h3>
+            <p>Critical: <span id="critical" class="danger">0</span></p>
+            <p>High: <span id="high" class="medium">0</span></p>
+            <p>Medium: <span id="medium">0</span></p>
         </div>
-    </div>
 
-    <!-- INSIGHT -->
-    <div class="card">
-        <h3>System Insight</h3>
-        <p id="insightText"></p>
-    </div>
+        <!-- INSIGHT -->
+        <div class="card">
+            <h3>System Insight</h3>
+            <p id="insightText"></p>
+        </div>
 
-    <!-- GRAPH -->
-    <div class="card">
-        <h3>Approval Rate by Age</h3>
-        <canvas id="ageChart"></canvas>
-    </div>
+        <!-- GRAPH -->
+        <div class="card">
+            <h3>Approval Rate by Age</h3>
+            <canvas id="ageChart"></canvas>
+        </div>
 
-    <!-- TABLE -->
-    <div class="card">
-        <h3>Counterexamples</h3>
-        <div id="counterTable"></div>
-    </div>
+        <!-- TABLE -->
+        <div class="card">
+            <h3>Counterexamples</h3>
+            <div id="counterTable"></div>
+        </div>
 
-</div>
-```
+    </div>
 
 </div>
 
@@ -253,6 +210,12 @@ function renderMetrics(data) {
         `<span class="${data.violations > 0 ? 'danger' : 'success'}">${data.violations}</span>`;
 
     document.getElementById("biasScore").innerText = data.bias_score;
+    document.getElementById("riskScore").innerText = data.risk_score;
+
+    // Severity
+    document.getElementById("critical").innerText = data.severity_breakdown.CRITICAL;
+    document.getElementById("high").innerText = data.severity_breakdown.HIGH;
+    document.getElementById("medium").innerText = data.severity_breakdown.MEDIUM;
 }
 
 function renderChart(data) {
@@ -287,7 +250,7 @@ function renderTable(data) {
             </tr>
     `;
 
-    data.counterexamples.slice(0, 10).forEach(v => {
+    data.counterexamples.forEach(v => {
         html += `
             <tr>
                 <td>${v.state.income}</td>
@@ -309,13 +272,17 @@ function generateInsight(data) {
     let text = "";
 
     if (data.violations === 0) {
-        text = "✅ Model satisfies all safety properties.";
+        text = "✅ Model is SAFE.";
     } else {
         text = `⚠️ ${data.violations} unsafe decisions detected.`;
     }
 
+    if (data.risk_score > 0.3) {
+        text += " 🚨 HIGH RISK SYSTEM.";
+    }
+
     if (data.bias_score > 0.3) {
-        text += " High bias detected.";
+        text += " ⚠️ Bias detected.";
     }
 
     document.getElementById("insightText").innerText = text;

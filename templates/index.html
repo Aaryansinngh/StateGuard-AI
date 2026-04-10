@@ -1,176 +1,175 @@
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>StateGuard AI</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: white;
+```
+<style>
+    body {
+        font-family: Arial;
+        background: #0b1a2f;
+        color: white;
+    }
 
-            /* FIXED BACKGROUND */
-            background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b') no-repeat center center fixed;
-            background-size: cover;
-        }
+    .container {
+        width: 80%;
+        margin: auto;
+    }
 
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-        }
+    .card {
+        background: #1c2c44;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 10px;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
 
-            /* GLASS EFFECT */
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-        }
+    .metric-box {
+        background: #2c3e55;
+        padding: 20px;
+        border-radius: 10px;
+        width: 22%;
+        text-align: center;
+    }
 
-        .card {
-            background: rgba(30, 41, 59, 0.9);
-            padding: 20px;
-            border-radius: 14px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
+    .danger { color: red; }
+    .success { color: lightgreen; }
 
-        .row {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+    table {
+        width: 100%;
+        background: white;
+        color: black;
+        border-collapse: collapse;
+    }
 
-        .metric-box {
-            flex: 1;
-            background: #334155;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
 
-        button {
-            padding: 12px 20px;
-            background: #22c55e;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        cursor: pointer;
+        background: #00c853;
+        border: none;
+        border-radius: 5px;
+        color: white;
+    }
 
-        select, textarea, input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 6px;
-            border: none;
-        }
+    button:hover {
+        background: #00a844;
+    }
+</style>
+```
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #334155;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th { background: #334155; }
-
-        .danger { color: #ef4444; }
-        .success { color: #22c55e; }
-        .medium { color: #f59e0b; }
-    </style>
 </head>
 
 <body>
 
-<h1>🚀 StateGuard AI Dashboard</h1>
-
 <div class="container">
 
-    <!-- MODEL -->
+```
+<h1>🚀 StateGuard AI Dashboard</h1>
+
+<!-- CONFIG -->
+<div class="card">
+    <h2>Model Configuration</h2>
+
+    <select id="model_type" onchange="updateUI()">
+        <option value="python">Python Model</option>
+        <option value="rule">Rule-Based Model</option>
+    </select>
+
+    <br><br>
+
+    <textarea id="rule" placeholder="Enter rule..." style="width:100%; display:none;"></textarea>
+
+    <br><br>
+
+    <input type="file" id="file">
+
+    <br>
+
+    <button onclick="verifyModel()">Run Verification</button>
+</div>
+
+<!-- RESULTS -->
+<div id="analysisSection" style="display:none;">
+
     <div class="card">
-        <h3>Model Configuration</h3>
-
-        <select id="model_type" onchange="updateUI()">
-            <option value="sklearn">Sklearn Model (.pkl)</option>
-            <option value="python">Python Model</option>
-            <option value="rule">Custom Rule</option>
-        </select>
-
-        <textarea id="rule" placeholder="income > 50000 and credit_score > 650" style="display:none;"></textarea>
-        <input type="file" id="file">
-
-        <button onclick="verifyModel()">Run Verification</button>
+        <button onclick="downloadReport()">Download Report</button>
+        <button onclick="compareModels()">Compare Last 2 Runs</button>
+        <p id="comparisonResult"></p>
     </div>
 
-    <!-- RESULTS -->
-    <div id="analysisSection" style="display:none;">
+    <!-- METRICS -->
+    <div class="card">
+        <div class="row">
 
-        <div class="card">
-            <div class="row">
-
-                <div class="metric-box">
-                    <h4>Total States</h4>
-                    <div id="totalStates">0</div>
-                </div>
-
-                <div class="metric-box">
-                    <h4>Violations</h4>
-                    <div id="violations">0</div>
-                </div>
-
-                <div class="metric-box">
-                    <h4>Bias Score</h4>
-                    <div id="biasScore">0</div>
-                </div>
-
-                <div class="metric-box">
-                    <h4>Risk Score</h4>
-                    <div id="riskScore">0</div>
-                </div>
-
+            <div class="metric-box">
+                <h4>Total States</h4>
+                <div id="totalStates">0</div>
             </div>
-        </div>
 
-        <div class="card">
-            <h3>Severity Breakdown</h3>
-            <p>Critical: <span id="critical" class="danger">0</span></p>
-            <p>High: <span id="high" class="medium">0</span></p>
-            <p>Medium: <span id="medium">0</span></p>
-        </div>
+            <div class="metric-box">
+                <h4>Violations</h4>
+                <div id="violations">0</div>
+            </div>
 
-        <div class="card">
-            <h3>System Insight</h3>
-            <p id="insightText"></p>
-        </div>
+            <div class="metric-box">
+                <h4>Bias Score</h4>
+                <div id="biasScore">0</div>
+            </div>
 
-        <div class="card">
-            <h3>Approval Rate by Age</h3>
-            <canvas id="ageChart"></canvas>
-        </div>
+            <div class="metric-box">
+                <h4>Risk Score</h4>
+                <div id="riskScore">0</div>
+            </div>
 
-        <div class="card">
-            <h3>Counterexamples</h3>
-            <div id="counterTable"></div>
         </div>
-
     </div>
+
+    <!-- SEVERITY -->
+    <div class="card">
+        <h3>Severity Breakdown</h3>
+        <p>Critical: <span id="critical">0</span></p>
+        <p>High: <span id="high">0</span></p>
+        <p>Medium: <span id="medium">0</span></p>
+    </div>
+
+    <!-- CHART -->
+    <div class="card">
+        <h3>Approval Rates by Age</h3>
+        <canvas id="ageChart"></canvas>
+    </div>
+
+    <!-- INSIGHT -->
+    <div class="card">
+        <h3>AI Insight</h3>
+        <p id="insightText"></p>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+        <h3>Counterexamples</h3>
+        <div id="counterTable"></div>
+    </div>
+
+</div>
+```
 
 </div>
 
 <script>
 let ageChart;
+let history = [];
 
 function updateUI() {
     const type = document.getElementById("model_type").value;
@@ -201,6 +200,8 @@ async function verifyModel() {
 
     const data = await response.json();
 
+    history.push(data);
+
     renderMetrics(data);
     renderChart(data);
     renderTable(data);
@@ -208,7 +209,6 @@ async function verifyModel() {
 }
 
 function renderMetrics(data) {
-
     document.getElementById("totalStates").innerText = data.total_states_checked;
 
     document.getElementById("violations").innerHTML =
@@ -224,8 +224,8 @@ function renderMetrics(data) {
 
 function renderChart(data) {
 
-    const ages = Object.keys(data.approval_rates_by_age);
-    const rates = Object.values(data.approval_rates_by_age);
+    const ages = Object.keys(data.approval_rates_by_age || {});
+    const rates = Object.values(data.approval_rates_by_age || {});
 
     if (ageChart) ageChart.destroy();
 
@@ -254,7 +254,7 @@ function renderTable(data) {
             </tr>
     `;
 
-    data.counterexamples.forEach(v => {
+    (data.counterexamples || []).forEach(v => {
         html += `
             <tr>
                 <td>${v.state.income}</td>
@@ -281,15 +281,44 @@ function generateInsight(data) {
         text = `⚠️ ${data.violations} unsafe decisions detected.`;
     }
 
-    if (data.risk_score > 0.3) {
-        text += " 🚨 HIGH RISK SYSTEM.";
-    }
-
-    if (data.bias_score > 0.3) {
-        text += " ⚠️ Bias detected.";
-    }
+    if (data.risk_score > 0.3) text += " 🚨 HIGH RISK SYSTEM.";
+    if (data.bias_score > 0.3) text += " ⚠️ Bias detected.";
 
     document.getElementById("insightText").innerText = text;
+}
+
+function downloadReport() {
+
+    let text = `
+STATEGUARD AI REPORT
+
+Total States: ${document.getElementById("totalStates").innerText}
+Violations: ${document.getElementById("violations").innerText}
+Bias Score: ${document.getElementById("biasScore").innerText}
+Risk Score: ${document.getElementById("riskScore").innerText}
+`;
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const a = document.createElement("a");
+
+    a.href = URL.createObjectURL(blob);
+    a.download = "report.txt";
+    a.click();
+}
+
+function compareModels() {
+
+    if (history.length < 2) {
+        document.getElementById("comparisonResult").innerText = "Run 2 models first!";
+        return;
+    }
+
+    const m1 = history[history.length - 2];
+    const m2 = history[history.length - 1];
+
+    document.getElementById("comparisonResult").innerText =
+        `Previous → Risk: ${m1.risk_score}, Bias: ${m1.bias_score}
+Current → Risk: ${m2.risk_score}, Bias: ${m2.bias_score}`;
 }
 
 updateUI();

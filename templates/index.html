@@ -358,8 +358,8 @@ function compareModels() {
     const m2 = history[history.length - 1];
 
     document.getElementById("comparisonResult").innerText =
-        `Previous → Risk: ${m1.risk_score}, Bias: ${m1.bias_score}
-Current → Risk: ${m2.risk_score}, Bias: ${m2.bias_score}`;
+        `Previous → Risk: ${m1.risk_score ?? 0}, Bias: ${m1.bias_score ?? 0}
+Current → Risk: ${m2.risk_score ?? 0}, Bias: ${m2.bias_score ?? 0}`;
 }
 
 updateUI();

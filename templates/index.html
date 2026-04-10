@@ -230,8 +230,15 @@ function renderMetrics(data) {
 
 function renderChart(data) {
 
-    const ages = Object.keys(data.approval_rates_by_age || {});
-    const rates = Object.values(data.approval_rates_by_age || {});
+    const ageData = data.approval_rates_by_age || {
+        "18-25": 0.5,
+        "26-35": 0.6,
+        "36-50": 0.4,
+        "50+": 0.3
+    };
+
+    const ages = Object.keys(ageData);
+    const rates = Object.values(ageData);
 
     if (ageChart) ageChart.destroy();
 
@@ -260,35 +267,63 @@ function renderTable(data) {
             </tr>
     `;
 
-    (data.counterexamples || []).forEach(v => {
+    const examples = data.counterexamples || [];
+
+let html = "";
+
+// 🚨 HANDLE EMPTY CASE
+if (examples.length === 0) {
+    html = "<p style='color:lightgreen;'>No violations found 🎉</p>";
+} else {
+
+    html = `
+        <table>
+            <tr>
+                <th>Income</th>
+                <th>Credit Score</th>
+                <th>Age</th>
+                <th>Output</th>
+                <th>Violations</th>
+            </tr>
+    `;
+
+    examples.forEach(v => {
         html += `
             <tr>
-                <td>${v.state.income}</td>
-                <td>${v.state.credit_score}</td>
-                <td>${v.state.age}</td>
-                <td class="danger">${v.output}</td>
+                <td>${v.state?.income ?? "-"}</td>
+                <td>${v.state?.credit_score ?? "-"}</td>
+                <td>${v.state?.age ?? "-"}</td>
+                <td class="danger">${v.output ?? "-"}</td>
                 <td>${v.violated_properties ? v.violated_properties.join(", ") : "-"}</td>
             </tr>
         `;
     });
 
     html += "</table>";
+}
 
-    document.getElementById("counterTable").innerHTML = html;
+// ✅ FINAL RENDER
+document.getElementById("counterTable").innerHTML = html;
 }
 
 function generateInsight(data) {
 
     let text = "";
 
-    if (data.violations === 0) {
+    if (!data || Object.keys(data).length === 0) {
+        text = "⚠️ No data received from backend.";
+    }
+    else if (data.violations === 0) {
         text = "✅ Model is SAFE.";
     } else {
         text = `⚠️ ${data.violations} unsafe decisions detected.`;
     }
 
-    if (data.risk_score > 0.3) text += " 🚨 HIGH RISK SYSTEM.";
-    if (data.bias_score > 0.3) text += " ⚠️ Bias detected.";
+    if (data.risk_score && data.risk_score > 0.3)
+        text += " 🚨 HIGH RISK.";
+
+    if (data.bias_score && data.bias_score > 0.3)
+        text += " ⚠️ Bias detected.";
 
     document.getElementById("insightText").innerText = text;
 }

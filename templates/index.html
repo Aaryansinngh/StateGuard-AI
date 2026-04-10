@@ -7,15 +7,22 @@
 
 ```
 <style>
-    body {
-        font-family: Arial;
-        background: #0b1a2f;
-        color: white;
-    }
-
+ body {
+    font-family: Arial;
+    background: #0b1a2f;   /* clean dark background */
+    color: white;
+    margin: 0;
+    padding: 0;
+}
     .container {
         width: 80%;
         margin: auto;
+        .container {
+    width: 80%;
+    margin: auto;
+    position: relative;
+    z-index: 10;
+}
     }
 
     .card {

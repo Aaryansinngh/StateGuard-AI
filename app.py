@@ -12,7 +12,7 @@ from verifier.property_checker import check_all_properties
 app = FastAPI()
 
 # ✅ FIXED (important for Render)
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="./templates")
 UPLOAD_DIR = "/tmp/uploaded_models"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -24,7 +24,6 @@ def home(request: Request):
         "index.html",
         {"request": request}
     )
-
 # ================= VERIFY MODEL =================
 @app.post("/verify_model")
 async def verify_model(

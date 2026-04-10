@@ -10,17 +10,24 @@ from verifier.state_space import generate_states
 from verifier.property_checker import check_all_properties
 
 app = FastAPI()
+
+# ✅ FIXED (important for Render)
 templates = Jinja2Templates(directory="templates")
 
 UPLOAD_DIR = "uploaded_models"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
+# ================= HOME =================
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        name="index.html",
+        context={"request": request}
+    )
 
 
+# ================= VERIFY MODEL =================
 @app.post("/verify_model")
 async def verify_model(
     request: Request,
@@ -75,7 +82,6 @@ async def verify_model(
         return {"error": "Invalid model type"}
 
     # ================= VERIFICATION LOOP =================
-
     age_stats = {}
 
     for state in states:
@@ -101,7 +107,6 @@ async def verify_model(
         # ===== PROPERTY CHECK =====
         violated_props = check_all_properties(state, output)
 
-        # 🔥 Ensure violations always have properties
         if violated_props:
             violations.append({
                 "state": state,
@@ -119,7 +124,6 @@ async def verify_model(
             age_stats[age]["rejected"] += 1
 
     # ================= FAIRNESS METRICS =================
-
     approval_rates = {}
 
     for age, stats in age_stats.items():

@@ -50,8 +50,15 @@ async def verify_model(
             shutil.copyfileobj(file.file, buffer)
 
         spec = importlib.util.spec_from_file_location("uploaded_model", file_path)
-        uploaded_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(uploaded_module)
+
+if spec is None or spec.loader is None:
+    return {"error": "Invalid Python file uploaded"}
+
+uploaded_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(uploaded_module)
+
+
+        
 
         if not hasattr(uploaded_module, "predict"):
             return {"error": "Python file must contain predict(income, credit_score, age)"}

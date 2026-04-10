@@ -13,6 +13,7 @@ app = FastAPI()
 
 # ✅ FIXED (important for Render)
 templates = Jinja2Templates(directory="./templates")
+templates.env.auto_reload = True
 UPLOAD_DIR = "/tmp/uploaded_models"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 

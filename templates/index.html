@@ -2,27 +2,38 @@
 <html>
 <head>
     <title>StateGuard AI</title>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
             margin: 0;
-            padding: 30px;
+            padding: 0;
+            color: white;
+
+            /* FIXED BACKGROUND */
+            background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b') no-repeat center center fixed;
+            background-size: cover;
         }
 
-        h1 { text-align: center; }
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
 
         .container {
             max-width: 1200px;
-            margin: auto;
+            margin: 40px auto;
+            padding: 20px;
+
+            /* GLASS EFFECT */
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
         }
 
         .card {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
+            background: rgba(30, 41, 59, 0.9);
             padding: 20px;
             border-radius: 14px;
             margin-bottom: 25px;
@@ -106,7 +117,6 @@
     <!-- RESULTS -->
     <div id="analysisSection" style="display:none;">
 
-        <!-- METRICS -->
         <div class="card">
             <div class="row">
 
@@ -133,7 +143,6 @@
             </div>
         </div>
 
-        <!-- SEVERITY -->
         <div class="card">
             <h3>Severity Breakdown</h3>
             <p>Critical: <span id="critical" class="danger">0</span></p>
@@ -141,19 +150,16 @@
             <p>Medium: <span id="medium">0</span></p>
         </div>
 
-        <!-- INSIGHT -->
         <div class="card">
             <h3>System Insight</h3>
             <p id="insightText"></p>
         </div>
 
-        <!-- GRAPH -->
         <div class="card">
             <h3>Approval Rate by Age</h3>
             <canvas id="ageChart"></canvas>
         </div>
 
-        <!-- TABLE -->
         <div class="card">
             <h3>Counterexamples</h3>
             <div id="counterTable"></div>
@@ -164,7 +170,6 @@
 </div>
 
 <script>
-
 let ageChart;
 
 function updateUI() {
@@ -212,7 +217,6 @@ function renderMetrics(data) {
     document.getElementById("biasScore").innerText = data.bias_score;
     document.getElementById("riskScore").innerText = data.risk_score;
 
-    // Severity
     document.getElementById("critical").innerText = data.severity_breakdown.CRITICAL;
     document.getElementById("high").innerText = data.severity_breakdown.HIGH;
     document.getElementById("medium").innerText = data.severity_breakdown.MEDIUM;
@@ -289,7 +293,6 @@ function generateInsight(data) {
 }
 
 updateUI();
-
 </script>
 
 </body>

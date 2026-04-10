@@ -20,9 +20,11 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # ================= HOME =================
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    print("FILES INSIDE TEMPLATES:", os.listdir("templates"))
-    return templates.TemplateResponse("index.html", {"request": request})
-
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request},
+        request=request
+    )
 
 # ================= VERIFY MODEL =================
 @app.post("/verify_model")

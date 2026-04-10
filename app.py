@@ -22,8 +22,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 def home(request: Request):
     return templates.TemplateResponse(
         "index.html",
-        {"request": request},
-        request=request
+        {"request": request}
     )
 
 # ================= VERIFY MODEL =================

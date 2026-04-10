@@ -157,20 +157,24 @@ async def verify_model(
 
     # ================= FINAL RESPONSE =================
     return {
-        "model_type": model_type,
-        "total_states_checked": len(states),
+    # FIXED KEYS (match frontend)
+    "total_states": len(states),
 
-        # Core metrics
-        "violations": len(violations),
-        "risk_score": risk_score,
-        "bias_score": bias_score,
+    # Core metrics
+    "violations": len(violations),
+    "risk_score": risk_score,
+    "bias_score": bias_score,
 
-        # Fairness
-        "approval_rates_by_age": approval_rates,
+    # Fairness
+    "approval_rates_by_age": approval_rates,
 
-        # Advanced analysis
-        "severity_breakdown": severity_count,
+    # Advanced analysis
+    "severity_breakdown": {
+        "critical": severity_count["CRITICAL"],
+        "high": severity_count["HIGH"],
+        "medium": severity_count["MEDIUM"]
+    },
 
-        # Debugging
-        "counterexamples": violations[:20]
-    }
+    # Debugging
+    "counterexamples": violations[:20]
+}

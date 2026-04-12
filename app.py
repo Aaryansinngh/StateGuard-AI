@@ -11,9 +11,10 @@ from verifier.property_checker import check_all_properties
 
 app = FastAPI()
 
-# ✅ FIXED (important for Render)
+# Templates (Render fix)
 templates = Jinja2Templates(directory="./templates")
 templates.env.auto_reload = True
+
 UPLOAD_DIR = "/tmp/uploaded_models"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -25,6 +26,8 @@ def home(request: Request):
         "index.html",
         {"request": request}
     )
+
+
 # ================= VERIFY MODEL =================
 @app.post("/verify_model")
 async def verify_model(
@@ -51,14 +54,11 @@ async def verify_model(
 
         spec = importlib.util.spec_from_file_location("uploaded_model", file_path)
 
-if spec is None or spec.loader is None:
-    return {"error": "Invalid Python file uploaded"}
+        if spec is None or spec.loader is None:
+            return {"error": "Invalid Python file uploaded"}
 
-uploaded_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(uploaded_module)
-
-
-        
+        uploaded_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(uploaded_module)
 
         if not hasattr(uploaded_module, "predict"):
             return {"error": "Python file must contain predict(income, credit_score, age)"}
@@ -80,6 +80,7 @@ spec.loader.exec_module(uploaded_module)
 
     # ================= RULE MODEL =================
     elif model_type == "rule":
+
         if not rule:
             return {"error": "Rule cannot be empty"}
 
@@ -164,24 +165,19 @@ spec.loader.exec_module(uploaded_module)
 
     # ================= FINAL RESPONSE =================
     return {
-    # FIXED KEYS (match frontend)
-    "total_states": len(states),
+        "total_states": len(states),
 
-    # Core metrics
-    "violations": len(violations),
-    "risk_score": risk_score,
-    "bias_score": bias_score,
+        "violations": len(violations),
+        "risk_score": risk_score,
+        "bias_score": bias_score,
 
-    # Fairness
-    "approval_rates_by_age": approval_rates,
+        "approval_rates_by_age": approval_rates,
 
-    # Advanced analysis
-    "severity_breakdown": {
-        "critical": severity_count["CRITICAL"],
-        "high": severity_count["HIGH"],
-        "medium": severity_count["MEDIUM"]
-    },
+        "severity_breakdown": {
+            "critical": severity_count["CRITICAL"],
+            "high": severity_count["HIGH"],
+            "medium": severity_count["MEDIUM"]
+        },
 
-    # Debugging
-    "counterexamples": violations[:20]
-}
+        "counterexamples": violations[:20]
+    }

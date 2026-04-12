@@ -1,5 +1,5 @@
 __pycache__/
 *.pyc
-uploaded_models/
-results/
 *.pkl
+uploaded_models/
+.env

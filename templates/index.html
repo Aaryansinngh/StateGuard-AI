@@ -1,354 +1,229 @@
 <!DOCTYPE html>
-
 <html>
 <head>
     <title>StateGuard AI</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-```
-<style>
- body {
-    font-family: Arial;
-    background: #0b1a2f;   /* clean dark background */
-    color: white;
-    margin: 0;
-    padding: 0;
-}
-    .container {
-        width: 80%;
-        margin: auto;
-        .container {
-    width: 80%;
-    margin: auto;
-    position: relative;
-    z-index: 10;
-}
-    }
-
-    .card {
-        background: #1c2c44;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 10px;
-    }
-
-    .row {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .metric-box {
-        background: #2c3e55;
-        padding: 20px;
-        border-radius: 10px;
-        width: 22%;
-        text-align: center;
-    }
-
-    .danger { color: red; }
-    .success { color: lightgreen; }
-
-    table {
-        width: 100%;
-        background: white;
-        color: black;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
-
-    button {
-        padding: 10px 20px;
-        margin-top: 10px;
-        cursor: pointer;
-        background: #00c853;
-        border: none;
-        border-radius: 5px;
-        color: white;
-    }
-
-    button:hover {
-        background: #00a844;
-    }
-</style>
-```
-
 </head>
 
-<body>
+<body style="background:#020617; color:white; font-family:sans-serif; padding:30px;">
 
-<div class="container">
-
-```
 <h1>🚀 StateGuard AI Dashboard</h1>
 
-<!-- CONFIG -->
-<div class="card">
+<p style="color:#94a3b8; max-width:700px;">
+StateGuard AI verifies machine learning models by exploring all possible input states 
+and detecting unsafe or biased decisions before deployment.
+</p>
+
+<br>
+
+<!-- MODEL CONFIG -->
+<div style="background:#0f172a; padding:20px; border-radius:10px;">
     <h2>Model Configuration</h2>
 
-    <select id="model_type" onchange="updateUI()">
+    <select id="modelType">
         <option value="python">Python Model</option>
-        <option value="rule">Rule-Based Model</option>
+        <option value="sklearn">Sklearn Model</option>
     </select>
 
-    <br><br>
-
-    <textarea id="rule" placeholder="Enter rule..." style="width:100%; display:none;"></textarea>
-
-    <br><br>
-
     <input type="file" id="file">
-
-    <br>
-
     <button onclick="verifyModel()">Run Verification</button>
+
+    <p style="color:#94a3b8; font-size:14px;">
+        Upload a model and run verification to test all possible inputs and detect unsafe outputs.
+    </p>
 </div>
 
-<!-- RESULTS -->
- <div class="card">
-    <button onclick="downloadReport()">Download Report</button>
-    <button onclick="compareModels()">Compare Last 2 Runs</button>
-    <p id="comparisonResult"></p>
-</div>
-<div id="analysisSection" style="display:none;">
+<hr>
 
-    <!-- METRICS -->
-    <div class="card">
-        <div class="row">
+<!-- ACTIONS -->
+<button onclick="downloadReport()">Download Report</button>
+<button onclick="compareModels()">Compare Last 2 Runs</button>
 
-            <div class="metric-box">
-                <h4>Total States</h4>
-                <div id="totalStates">0</div>
-            </div>
+<p id="comparisonResult" style="color:cyan;"></p>
 
-            <div class="metric-box">
-                <h4>Violations</h4>
-                <div id="violations">0</div>
-            </div>
+<!-- METRICS -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-top:20px;">
 
-            <div class="metric-box">
-                <h4>Bias Score</h4>
-                <div id="biasScore">0</div>
-            </div>
-
-            <div class="metric-box">
-                <h4>Risk Score</h4>
-                <div id="riskScore">0</div>
-            </div>
-
-        </div>
+    <div style="background:#0f172a; padding:15px; border-radius:10px;">
+        <h3>Total States</h3>
+        <p id="totalStates">-</p>
     </div>
 
-    <!-- SEVERITY -->
-    <div class="card">
-        <h3>Severity Breakdown</h3>
-        <p>Critical: <span id="critical">0</span></p>
-        <p>High: <span id="high">0</span></p>
-        <p>Medium: <span id="medium">0</span></p>
+    <div style="background:#0f172a; padding:15px; border-radius:10px;">
+        <h3>Violations</h3>
+        <p id="violations">-</p>
     </div>
 
-    <!-- CHART -->
-    <div class="card">
-        <h3>Approval Rates by Age</h3>
-        <canvas id="ageChart"></canvas>
+    <div style="background:#0f172a; padding:15px; border-radius:10px;">
+        <h3>Bias Score</h3>
+        <p id="bias">-</p>
     </div>
 
-    <!-- INSIGHT -->
-    <div class="card">
-        <h3>AI Insight</h3>
-        <p id="insightText"></p>
-    </div>
-
-    <!-- TABLE -->
-    <div class="card">
-        <h3>Counterexamples</h3>
-        <div id="counterTable"></div>
+    <div style="background:#0f172a; padding:15px; border-radius:10px;">
+        <h3>Risk Score</h3>
+        <p id="risk">-</p>
     </div>
 
 </div>
-```
+
+<!-- EXPLANATION -->
+<div style="margin-top:20px; color:#94a3b8; font-size:14px;">
+<p><b>Total States:</b> All input combinations tested</p>
+<p><b>Violations:</b> Unsafe decisions detected</p>
+<p><b>Bias Score:</b> Fairness difference across age groups</p>
+<p><b>Risk Score:</b> Probability of unsafe outputs</p>
+</div>
+
+<!-- CHARTS -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:30px;">
+
+    <div style="background:#0f172a; padding:20px; border-radius:10px;">
+        <h3>📊 Safe vs Violations</h3>
+        <canvas id="violationChart"></canvas>
+    </div>
+
+    <div style="background:#0f172a; padding:20px; border-radius:10px;">
+        <h3>⚖️ Bias Analysis (Age vs Approval)</h3>
+        <canvas id="biasChart"></canvas>
+    </div>
 
 </div>
+
+<!-- COUNTEREXAMPLES -->
+<h2 style="margin-top:30px;">⚠️ Counterexamples</h2>
+<div id="counterTable"></div>
 
 <script>
-let ageChart;
 let history = [];
+let violationChart, biasChart;
 
-function updateUI() {
-    const type = document.getElementById("model_type").value;
-    document.getElementById("rule").style.display = type === "rule" ? "block" : "none";
-}
-
+// ===== VERIFY =====
 async function verifyModel() {
-
-    document.getElementById("analysisSection").style.display = "block";
-    document.getElementById("totalStates").innerText = "Loading...";
-
-    const type = document.getElementById("model_type").value;
-    const rule = document.getElementById("rule").value;
     const fileInput = document.getElementById("file");
+    const modelType = document.getElementById("modelType").value;
 
     const formData = new FormData();
-    formData.append("model_type", type);
-    formData.append("rule", rule);
+    formData.append("model_type", modelType);
+    formData.append("file", fileInput.files[0]);
 
-    if (fileInput.files.length > 0) {
-        formData.append("file", fileInput.files[0]);
-    }
-
-    const response = await fetch("/verify_model", {
+    const res = await fetch("/verify_model", {
         method: "POST",
         body: formData
     });
 
-    const data = await response.json();
+    const data = await res.json();
+    console.log(data);
 
     history.push(data);
-
-    renderMetrics(data);
-    renderChart(data);
-    renderTable(data);
-    generateInsight(data);
+    updateUI(data);
+    renderCharts(data);
 }
 
-function renderMetrics(data) {
-    document.getElementById("totalStates").innerText = data.total_states_checked;
+// ===== UPDATE UI =====
+function updateUI(data) {
 
-    document.getElementById("violations").innerHTML =
-        `<span class="${data.violations > 0 ? 'danger' : 'success'}">${data.violations}</span>`;
+    const total = data.total_states_checked || 0;
+    const violations = data.violations || 0;
 
-    document.getElementById("biasScore").innerText = data.bias_score;
-    document.getElementById("riskScore").innerText = data.risk_score;
+    document.getElementById("totalStates").innerText = total;
+    document.getElementById("violations").innerText = violations;
+    document.getElementById("bias").innerText = data.bias_score || 0;
 
-    document.getElementById("critical").innerText = data.severity_breakdown.CRITICAL;
-    document.getElementById("high").innerText = data.severity_breakdown.HIGH;
-    document.getElementById("medium").innerText = data.severity_breakdown.MEDIUM;
+    const risk = total > 0 ? (violations / total).toFixed(2) : 0;
+    document.getElementById("risk").innerText = risk;
+
+    // COUNTEREXAMPLES TABLE
+    let html = `
+    <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <tr style="background:#1e293b;">
+            <th>Income</th>
+            <th>Credit</th>
+            <th>Age</th>
+            <th>Output</th>
+        </tr>`;
+
+    (data.counterexamples || []).forEach(v => {
+        html += `
+        <tr>
+            <td>${v.state.income}</td>
+            <td>${v.state.credit_score}</td>
+            <td>${v.state.age}</td>
+            <td style="color:${v.output === 'approved' ? 'lightgreen' : 'red'}">
+                ${v.output}
+            </td>
+        </tr>`;
+    });
+
+    html += "</table>";
+    document.getElementById("counterTable").innerHTML = html;
 }
 
-function renderChart(data) {
+// ===== CHARTS =====
+function renderCharts(data) {
 
-    const ageData = data.approval_rates_by_age || {
-        "18-25": 0.5,
-        "26-35": 0.6,
-        "36-50": 0.4,
-        "50+": 0.3
-    };
+    const total = data.total_states_checked || 0;
+    const violations = data.violations || 0;
+    const safe = total - violations;
 
-    const ages = Object.keys(ageData);
-    const rates = Object.values(ageData);
+    // PIE CHART
+    if (violationChart) violationChart.destroy();
 
-    if (ageChart) ageChart.destroy();
+    violationChart = new Chart(document.getElementById("violationChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Safe", "Violations"],
+            datasets: [{
+                data: [safe, violations],
+                backgroundColor: ["#22c55e", "#ef4444"]
+            }]
+        }
+    });
 
-    ageChart = new Chart(document.getElementById("ageChart"), {
+    // BAR CHART
+    const labels = Object.keys(data.approval_rates_by_age || {});
+    const values = Object.values(data.approval_rates_by_age || {});
+
+    if (biasChart) biasChart.destroy();
+
+    biasChart = new Chart(document.getElementById("biasChart"), {
         type: "bar",
         data: {
-            labels: ages,
+            labels: labels,
             datasets: [{
                 label: "Approval Rate",
-                data: rates
+                data: values,
+                backgroundColor: "#3b82f6"
             }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1
+                }
+            }
         }
     });
 }
 
-function renderTable(data) {
-
-    let html = `
-        <table>
-            <tr>
-                <th>Income</th>
-                <th>Credit</th>
-                <th>Age</th>
-                <th>Output</th>
-                <th>Violation</th>
-            </tr>
-    `;
-
-    const examples = data.counterexamples || [];
-
-let html = "";
-
-// 🚨 HANDLE EMPTY CASE
-if (examples.length === 0) {
-    html = "<p style='color:lightgreen;'>No violations found 🎉</p>";
-} else {
-
-    html = `
-        <table>
-            <tr>
-                <th>Income</th>
-                <th>Credit Score</th>
-                <th>Age</th>
-                <th>Output</th>
-                <th>Violations</th>
-            </tr>
-    `;
-
-    examples.forEach(v => {
-        html += `
-            <tr>
-                <td>${v.state?.income ?? "-"}</td>
-                <td>${v.state?.credit_score ?? "-"}</td>
-                <td>${v.state?.age ?? "-"}</td>
-                <td class="danger">${v.output ?? "-"}</td>
-                <td>${v.violated_properties ? v.violated_properties.join(", ") : "-"}</td>
-            </tr>
-        `;
-    });
-
-    html += "</table>";
-}
-
-// ✅ FINAL RENDER
-document.getElementById("counterTable").innerHTML = html;
-}
-
-function generateInsight(data) {
-
-    let text = "";
-
-    if (!data || Object.keys(data).length === 0) {
-        text = "⚠️ No data received from backend.";
-    }
-    else if (data.violations === 0) {
-        text = "✅ Model is SAFE.";
-    } else {
-        text = `⚠️ ${data.violations} unsafe decisions detected.`;
-    }
-
-    if (data.risk_score && data.risk_score > 0.3)
-        text += " 🚨 HIGH RISK.";
-
-    if (data.bias_score && data.bias_score > 0.3)
-        text += " ⚠️ Bias detected.";
-
-    document.getElementById("insightText").innerText = text;
-}
-
+// ===== DOWNLOAD =====
 function downloadReport() {
+    if (history.length === 0) {
+        alert("Run model first!");
+        return;
+    }
 
-    let text = `
-STATEGUARD AI REPORT
+    const data = JSON.stringify(history[history.length - 1], null, 2);
+    const blob = new Blob([data], { type: "application/json" });
 
-Total States: ${document.getElementById("totalStates").innerText}
-Violations: ${document.getElementById("violations").innerText}
-Bias Score: ${document.getElementById("biasScore").innerText}
-Risk Score: ${document.getElementById("riskScore").innerText}
-`;
-
-    const blob = new Blob([text], { type: "text/plain" });
     const a = document.createElement("a");
-
     a.href = URL.createObjectURL(blob);
-    a.download = "report.txt";
+    a.download = "report.json";
     a.click();
 }
 
+// ===== COMPARE =====
 function compareModels() {
-
     if (history.length < 2) {
         document.getElementById("comparisonResult").innerText = "Run 2 models first!";
         return;
@@ -358,11 +233,9 @@ function compareModels() {
     const m2 = history[history.length - 1];
 
     document.getElementById("comparisonResult").innerText =
-        `Previous → Risk: ${m1.risk_score ?? 0}, Bias: ${m1.bias_score ?? 0}
-Current → Risk: ${m2.risk_score ?? 0}, Bias: ${m2.bias_score ?? 0}`;
+        `Previous → Violations: ${m1.violations}, Bias: ${m1.bias_score}
+Current → Violations: ${m2.violations}, Bias: ${m2.bias_score}`;
 }
-
-updateUI();
 </script>
 
 </body>

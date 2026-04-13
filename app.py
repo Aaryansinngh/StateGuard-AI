@@ -11,7 +11,6 @@ from verifier.property_checker import check_all_properties
 
 app = FastAPI()
 
-# Templates (Render fix)
 templates = Jinja2Templates(directory="./templates")
 templates.env.auto_reload = True
 
@@ -41,7 +40,7 @@ async def verify_model(
     states = list(generate_states())
     model = None
 
-    # ================= PYTHON MODEL =================
+    # ===== LOAD MODEL =====
     if model_type == "python":
 
         if file is None:
@@ -65,7 +64,6 @@ async def verify_model(
 
         model = uploaded_module
 
-    # ================= SKLEARN MODEL =================
     elif model_type == "sklearn":
 
         if file is None:
@@ -78,7 +76,6 @@ async def verify_model(
 
         model = joblib.load(file_path)
 
-    # ================= RULE MODEL =================
     elif model_type == "rule":
 
         if not rule:
@@ -114,10 +111,23 @@ async def verify_model(
         violated_props = check_all_properties(state, output)
 
         if violated_props:
+
+            reason = ""
+
+            if state["income"] < 40000:
+                reason = "Low income"
+            elif state["credit_score"] < 650:
+                reason = "Low credit score"
+            elif state["age"] < 25:
+                reason = "Young age (possible bias)"
+            else:
+                reason = "Model inconsistency"
+
             violations.append({
                 "state": state,
                 "output": output,
-                "violated_properties": violated_props
+                "violated_properties": violated_props,
+                "reason": reason
             })
 
         # ===== FAIRNESS TRACKING =====
@@ -137,16 +147,14 @@ async def verify_model(
         approval_rates[str(age)] = stats["approved"] / total if total > 0 else 0
 
     if approval_rates:
-        max_rate = max(approval_rates.values())
-        min_rate = min(approval_rates.values())
-        bias_score = round(max_rate - min_rate, 3)
+        bias_score = round(max(approval_rates.values()) - min(approval_rates.values()), 3)
     else:
         bias_score = 0
 
-    # ================= RISK SCORE =================
-    risk_score = round(len(violations) / len(states), 3) if len(states) > 0 else 0
+    # ================= RISK =================
+    risk_score = round(len(violations) / len(states), 3) if states else 0
 
-    # ================= SEVERITY ANALYSIS =================
+    # ================= SEVERITY =================
     severity_count = {
         "CRITICAL": 0,
         "HIGH": 0,
@@ -154,30 +162,25 @@ async def verify_model(
     }
 
     for v in violations:
-        if "violated_properties" in v:
-            for prop in v["violated_properties"]:
-                if "age" in prop:
-                    severity_count["CRITICAL"] += 1
-                elif "income" in prop:
-                    severity_count["HIGH"] += 1
-                else:
-                    severity_count["MEDIUM"] += 1
+        for prop in v.get("violated_properties", []):
+            if "age" in prop:
+                severity_count["CRITICAL"] += 1
+            elif "income" in prop:
+                severity_count["HIGH"] += 1
+            else:
+                severity_count["MEDIUM"] += 1
 
-    # ================= FINAL RESPONSE =================
+    # ================= RESPONSE =================
     return {
-        "total_states": len(states),
-
+        "total_states_checked": len(states),
         "violations": len(violations),
         "risk_score": risk_score,
         "bias_score": bias_score,
-
         "approval_rates_by_age": approval_rates,
-
         "severity_breakdown": {
             "critical": severity_count["CRITICAL"],
             "high": severity_count["HIGH"],
             "medium": severity_count["MEDIUM"]
         },
-
         "counterexamples": violations[:20]
     }

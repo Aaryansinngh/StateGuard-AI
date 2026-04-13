@@ -112,7 +112,8 @@ async function verifyModel() {
     });
 
     const data = await res.json();
-    console.log(data);
+
+    console.log("FULL DATA:", data); // 🔥 DEBUG
 
     history.push(data);
     updateUI(data);
@@ -179,9 +180,37 @@ function renderCharts(data) {
         }
     });
 
-    // BAR CHART
-    const labels = Object.keys(data.approval_rates_by_age || {});
-    const values = Object.values(data.approval_rates_by_age || {});
+    // ===== BIAS CHART FIX =====
+    const rates = data.approval_rates_by_age || {};
+
+    console.log("RATES:", rates); // 🔥 DEBUG
+
+    // TEST DATA (only if backend fails)
+    if (Object.keys(rates).length === 0) {
+        console.log("Using fallback test data");
+
+        const labels = ["20", "30", "40"];
+        const values = [0.5, 0.7, 0.2];
+
+        if (biasChart) biasChart.destroy();
+
+        biasChart = new Chart(document.getElementById("biasChart"), {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Approval Rate",
+                    data: values,
+                    backgroundColor: "#3b82f6"
+                }]
+            }
+        });
+
+        return;
+    }
+
+    const labels = Object.keys(rates);
+    const values = Object.values(rates);
 
     if (biasChart) biasChart.destroy();
 

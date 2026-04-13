@@ -66,7 +66,7 @@ and detecting unsafe or biased decisions before deployment.
 
 </div>
 
-<!-- 🔥 NEW INSIGHTS -->
+<!-- INSIGHTS -->
 <p id="biasWarning" style="margin-top:15px; font-weight:bold;"></p>
 <p id="worstAge" style="color:#94a3b8;"></p>
 <p id="summary" style="color:#94a3b8; margin-top:10px;"></p>
@@ -96,7 +96,7 @@ let violationChart, biasChart;
 
 // ===== VERIFY =====
 async function verifyModel() {
-    document.body.style.cursor = "wait"; // 🔥 loading
+    document.body.style.cursor = "wait";
 
     const fileInput = document.getElementById("file");
     const modelType = document.getElementById("modelType").value;
@@ -118,7 +118,7 @@ async function verifyModel() {
     updateUI(data);
     renderCharts(data);
 
-    document.body.style.cursor = "default"; // 🔥 done
+    document.body.style.cursor = "default";
 }
 
 // ===== UPDATE UI =====
@@ -134,7 +134,7 @@ function updateUI(data) {
     const risk = total > 0 ? (violations / total).toFixed(2) : 0;
     document.getElementById("risk").innerText = risk;
 
-    // 🔥 Bias warning
+    // Bias warning
     if (data.bias_score > 0.2) {
         document.getElementById("biasWarning").innerText = "⚠️ Bias Detected!";
         document.getElementById("biasWarning").style.color = "red";
@@ -143,7 +143,7 @@ function updateUI(data) {
         document.getElementById("biasWarning").style.color = "lightgreen";
     }
 
-    // 🔥 Worst age
+    // Worst age
     const rates = data.approval_rates_by_age || {};
     if (Object.keys(rates).length > 0) {
         let minAge = Object.keys(rates).reduce((a, b) => rates[a] < rates[b] ? a : b);
@@ -151,11 +151,11 @@ function updateUI(data) {
             "Most disadvantaged age group: " + minAge;
     }
 
-    // 🔥 Summary
+    // Summary
     document.getElementById("summary").innerText =
         `Out of ${total} states, ${violations} violations were found. Bias score is ${data.bias_score}.`;
 
-    // 🔥 Table (limited rows)
+    // TABLE WITH REASON
     let html = `
     <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
         <tr style="background:#1e293b;">
@@ -163,6 +163,7 @@ function updateUI(data) {
             <th>Credit</th>
             <th>Age</th>
             <th>Output</th>
+            <th>Reason</th>
         </tr>`;
 
     (data.counterexamples || []).slice(0, 20).forEach(v => {
@@ -173,6 +174,9 @@ function updateUI(data) {
             <td>${v.state.age}</td>
             <td style="color:${v.output === 'approved' ? 'lightgreen' : 'red'}">
                 ${v.output}
+            </td>
+            <td style="color:#facc15;">
+                ${v.reason || "N/A"}
             </td>
         </tr>`;
     });
